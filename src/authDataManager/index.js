@@ -73,7 +73,7 @@ module.exports = function(oauthOptions = {}, enableAnonymousUsers = true) {
       if (optionalProvider.module) {
         validateAuthData = require(optionalProvider.module).validateAuthData;
         validateAppId = require(optionalProvider.module).validateAppId;
-      };
+      }
 
       if (optionalProvider.validateAuthData) {
         validateAuthData = optionalProvider.validateAuthData;
@@ -88,7 +88,7 @@ module.exports = function(oauthOptions = {}, enableAnonymousUsers = true) {
     }
 
     return function(authData) {
-      return validateAuthData(authData, optionalProvider).then(() => {
+      return validateAuthData(authData, optionalProvider).then(() => {
         if (appIds) {
           return validateAppId(appIds, authData, optionalProvider);
         }
