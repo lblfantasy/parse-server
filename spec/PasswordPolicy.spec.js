@@ -1,7 +1,6 @@
 "use strict";
 
 const requestp = require('request-promise');
-const Config = require('../src/Config');
 
 describe("Password Policy: ", () => {
 
@@ -28,7 +27,7 @@ describe("Password Policy: ", () => {
       user.setPassword("original");
       user.set('email', 'user@parse.com');
       return user.signUp();
-    }).then(user => {
+    }).then(() => {
       Parse.User.requestPasswordReset("user@parse.com");
     }).then(() => {
       // wait for a bit more than the validity duration set
@@ -77,7 +76,7 @@ describe("Password Policy: ", () => {
       user.setPassword("original");
       user.set('email', 'user@parse.com');
       return user.signUp();
-    }).then(user => {
+    }).then(() => {
       Parse.User.requestPasswordReset("user@parse.com");
     }).then(() => {
       // wait for a bit but less than the validity duration
@@ -204,14 +203,14 @@ describe("Password Policy: ", () => {
       user.set('email', 'user1@parse.com');
       user.signUp().then(() => {
         Parse.User.logOut();
-        Parse.User.logIn("user1", "1digit").then(function (user) {
+        Parse.User.logIn("user1", "1digit").then(function () {
           done();
         }).catch((err) => {
           jfail(err);
           fail("Should be able to login");
           done();
         });
-      }).catch((error) => {
+      }).catch(() => {
         fail('Should have succeeded as password confirms to the policy.');
         done();
       });
@@ -223,7 +222,7 @@ describe("Password Policy: ", () => {
     reconfigureServer({
       appName: 'passwordPolicy',
       passwordPolicy: {
-        validatorCallback: password => false  // just fail
+        validatorCallback: () => false  // just fail
       },
       publicServerURL: "http://localhost:8378/1"
     }).then(() => {
@@ -245,7 +244,7 @@ describe("Password Policy: ", () => {
     reconfigureServer({
       appName: 'passwordPolicy',
       passwordPolicy: {
-        validatorCallback: password => true   // never fail
+        validatorCallback: () => true   // never fail
       },
       publicServerURL: "http://localhost:8378/1"
     }).then(() => {
@@ -254,14 +253,14 @@ describe("Password Policy: ", () => {
       user.set('email', 'user1@parse.com');
       user.signUp().then(() => {
         Parse.User.logOut();
-        Parse.User.logIn("user1", "oneUpper").then(function (user) {
+        Parse.User.logIn("user1", "oneUpper").then(function () {
           done();
         }).catch((err) => {
           jfail(err);
           fail("Should be able to login");
           done();
         });
-      }).catch((error) => {
+      }).catch(() => {
         fail('Should have succeeded as password confirms to the policy.');
         done();
       });
@@ -274,7 +273,7 @@ describe("Password Policy: ", () => {
       appName: 'passwordPolicy',
       passwordPolicy: {
         validatorPattern: /[A-Z]+/,  // password should contain at least one UPPER case letter
-        validatorCallback: value => true
+        validatorCallback: () => true
       },
       publicServerURL: "http://localhost:8378/1"
     }).then(() => {
@@ -297,7 +296,7 @@ describe("Password Policy: ", () => {
       appName: 'passwordPolicy',
       passwordPolicy: {
         validatorPattern: /[A-Z]+/,  // password should contain at least one UPPER case letter
-        validatorCallback: value => false
+        validatorCallback: () => false
       },
       publicServerURL: "http://localhost:8378/1"
     }).then(() => {
@@ -320,7 +319,7 @@ describe("Password Policy: ", () => {
       appName: 'passwordPolicy',
       passwordPolicy: {
         validatorPattern: /[A-Z]+/,  // password should contain at least one digit
-        validatorCallback: value => true
+        validatorCallback: () => true
       },
       publicServerURL: "http://localhost:8378/1"
     }).then(() => {
@@ -329,14 +328,14 @@ describe("Password Policy: ", () => {
       user.set('email', 'user1@parse.com');
       user.signUp().then(() => {
         Parse.User.logOut();
-        Parse.User.logIn("user1", "oneUpper").then(function (user) {
+        Parse.User.logIn("user1", "oneUpper").then(function () {
           done();
         }).catch((err) => {
           jfail(err);
           fail("Should be able to login");
           done();
         });
-      }).catch((error) => {
+      }).catch(() => {
         fail('Should have succeeded as password confirms to the policy.');
         done();
       });
@@ -377,7 +376,7 @@ describe("Password Policy: ", () => {
             expect(response.statusCode).toEqual(302);
             expect(response.body).toEqual('Found. Redirecting to http://localhost:8378/1/apps/password_reset_success.html?username=user1');
 
-            Parse.User.logIn("user1", "has2init").then(function (user) {
+            Parse.User.logIn("user1", "has2init").then(function () {
               done();
             }).catch((err) => {
               jfail(err);
@@ -460,7 +459,7 @@ describe("Password Policy: ", () => {
             expect(response.statusCode).toEqual(302);
             expect(response.body).toEqual(`Found. Redirecting to http://localhost:8378/1/apps/choose_password?username=user1&token=${token}&id=test&error=Password%20does%20not%20confirm%20to%20the%20Password%20Policy.&app=passwordPolicy`);
 
-            Parse.User.logIn("user1", "has 1 digit").then(function (user) {
+            Parse.User.logIn("user1", "has 1 digit").then(function () {
               done();
             }).catch((err) => {
               jfail(err);
@@ -562,7 +561,7 @@ describe("Password Policy: ", () => {
       user.set('email', 'user1@parse.com');
       user.signUp().then(() => {
         done();
-      }).catch((error) => {
+      }).catch(() => {
         fail('Should have succeeded as password does not contain username.');
         done();
       });
@@ -583,7 +582,7 @@ describe("Password Policy: ", () => {
       user.set('email', 'user1@parse.com');
       user.signUp().then(() => {
         done();
-      }).catch((error) => {
+      }).catch(() => {
         fail('Should have succeeded as policy allows username in password.');
         done();
       });
@@ -624,7 +623,7 @@ describe("Password Policy: ", () => {
             expect(response.statusCode).toEqual(302);
             expect(response.body).toEqual(`Found. Redirecting to http://localhost:8378/1/apps/choose_password?username=user1&token=${token}&id=test&error=Password%20does%20not%20confirm%20to%20the%20Password%20Policy.&app=passwordPolicy`);
 
-            Parse.User.logIn("user1", "r@nd0m").then(function (user) {
+            Parse.User.logIn("user1", "r@nd0m").then(function () {
               done();
             }).catch((err) => {
               jfail(err);
@@ -708,7 +707,7 @@ describe("Password Policy: ", () => {
             expect(response.statusCode).toEqual(302);
             expect(response.body).toEqual('Found. Redirecting to http://localhost:8378/1/apps/password_reset_success.html?username=user1');
 
-            Parse.User.logIn("user1", "uuser11").then(function (user) {
+            Parse.User.logIn("user1", "uuser11").then(function () {
               done();
             }).catch(err => {
               jfail(err);
